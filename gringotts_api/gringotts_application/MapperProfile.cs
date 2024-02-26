@@ -24,9 +24,9 @@ namespace gringotts_application
             /// Configures mapping from MageDTO to MageModel.
             /// </summary>
             CreateMap<MageDTO, MageModel>();
-            
+
             /// <summary>
-            /// Configures mapping from MageDTO to MageModel.
+            /// Configures mapping from MageDTO to MageListModel, specifying how the mag_house property is mapped.
             /// </summary>
             CreateMap<MageDTO, MageListModel>().ForMember(dest => dest.mag_house, opt => opt.MapFrom(src => src.mag_hou_id)); ;
 

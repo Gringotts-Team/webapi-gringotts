@@ -1,5 +1,7 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +13,9 @@ namespace gringotts_application.Models
     /// </summary>
     public class MageListModel
     {
+        [Key]
+        public int mag_id { get; set; }
+
         /// <summary>
         /// Gets or sets the aaln of the mage.
         /// </summary>

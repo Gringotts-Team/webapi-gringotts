@@ -128,12 +128,10 @@ namespace gringotts_api
                 options.AddPolicy(name: "_miOrigenPermitidoEspecifico", policy =>
                 {
                     policy.WithOrigins("http://localhost:8080", "http://localhost:4200", "https://gringottsapp.netlify.app", "https://gringottsdev.netlify.app").
-                    WithMethods("GET", "POST").
+                    WithMethods("GET", "POST", "PUT", "DELETE").
                     AllowAnyHeader();
                 });
             });
-
-            //services.AddAutoMapper(typeof(Startup));
 
             var mapperConfig = new MapperConfiguration(mc =>
             {

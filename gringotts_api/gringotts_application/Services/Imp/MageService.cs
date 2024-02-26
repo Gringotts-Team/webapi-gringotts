@@ -22,6 +22,8 @@ namespace gringotts_application.Services.Imp
         /// Constructor for MageService.
         /// </summary>
         /// <param name="context">Database context for Gringotts.</param>
+        /// <param name="helper"></param>
+        /// <param name="mapper"></param>
         public MageService(GringottsDbContext context, ServiceHelper helper, IMapper mapper)
         {
             _context = context;
@@ -37,68 +39,53 @@ namespace gringotts_application.Services.Imp
         /// 
         public async Task<MageDTO> CreateMage(MageModel mageModel)
         {
-            mageModel.mag_birthdate = mageModel.mag_birthdate.ToUniversalTime();
-            MageDTO mageDTO = _mapper.Map<MageDTO>(mageModel);
-            mageDTO.mag_inscription = DateTime.UtcNow;
-
-
-            if (_helper.IsYounger(mageDTO.mag_birthdate))
+            try
             {
-                var msg = "The mage must be at least 16 years old";
-                throw new ApiException(msg);
-            }
+                mageModel.mag_birthdate = mageModel.mag_birthdate.ToUniversalTime();
+                MageDTO mageDTO = _mapper.Map<MageDTO>(mageModel);
+                mageDTO.mag_inscription = DateTime.UtcNow;
 
-            string[] aaln = mageDTO.mag_aaln.Split("-");
-            string schoolPart = aaln[0];
-            string housePart = aaln[1];
-            string numericPart = aaln[2];
 
-            var houseInitials = await _context.houses.Where(h => h.hou_id == mageDTO.mag_hou_id)
-            .Select(h => h.hou_name.Substring(0, 2))
-            .FirstOrDefaultAsync();
+                if (_helper.IsYounger(mageDTO.mag_birthdate))
+                {
+                    var msg = "The mage must be at least 16 years old";
+                    throw new ApiException(msg);
+                }
 
-            houseInitials = houseInitials?.ToUpper();
+                await _helper.AALNValidator(mageDTO);
 
-            if (houseInitials != null && houseInitials != housePart)
-            {
-                var msg = "The house indicated in the aaln does not coincide with the house of the mage";
-                throw new ApiException(msg);
-            }
-
-            if (houseInitials == "OT" && schoolPart != "OT")
-            {
-                var msg = "For the OT house, the school initials should be OT";
-                throw new ApiException(msg);
-            }
-            else if (houseInitials != "OT" && schoolPart != "HG")
-            {
-                var msg = "For " + houseInitials + " house, the school initials should be HG";
-                throw new ApiException(msg);
-            }
-
-            var exists = await _context.mages.AnyAsync(m => m.mag_aaln.Contains(numericPart));
-
-            if (exists)
-            {
-                var msg = "AALN already exists";
-                throw new ApiException(msg);
-            }
-            else
-            {
                 EntityEntry<MageDTO> mageCreated = await _context.mages.AddAsync(mageDTO);
                 await _context.SaveChangesAsync();
                 return mageCreated.Entity;
+            }
+            catch (ApiException ex)
+            {
+                var msg = ex.Message;
+                throw new ApiException(msg);
             }
 
 
         }
 
         /// <summary>
-        /// Retrieves a list of mages based on the provided filtering criteria.
+        /// Retrieves a list of mages based on optional filtering criteria.
         /// </summary>
-        /// <param name="filter">The model containing the filtering parameters.</param>
-        /// <returns>A list of MageListModel objects representing the filtered mages.</returns>
-        public async Task<List<MageListModel>> GetMageList(MageFilterModel filter)
+        /// <param name="mageName">The name or partial name of the mage to filter by.</param>
+        /// <param name="AALN">The AALN of the mage to filter by.</param>
+        /// <param name="minAge">The minimum age of the mage to filter by.</param>
+        /// <param name="maxAge">The maximum age of the mage to filter by.</param>
+        /// <param name="houseId">The ID of the house to filter by.</param>
+        /// <param name="minRegDate">The minimum registration date of the mage to filter by.</param>
+        /// <param name="maxRegDate">The maximum registration date of the mage to filter by.</param>
+        /// <returns>A list of mages matching the provided criteria.</returns>
+        public async Task<List<MageListModel>> GetMageList(
+            string? mageName,
+            string? AALN,
+            int? minAge,
+            int? maxAge,
+            int? houseId,
+            DateTime? minRegDate,
+            DateTime? maxRegDate)
         {
             try
             {
@@ -107,26 +94,26 @@ namespace gringotts_application.Services.Imp
                                       orderby mag.mag_name
                                       select new MageListModel
                                       {
+                                          mag_id = mag.mag_id,
                                           mag_aaln = mag.mag_aaln,
                                           mag_name = mag.mag_name,
                                           mag_age = _helper.CurrentAge(mag.mag_birthdate),
                                           mag_inscription = mag.mag_inscription,
                                           mag_house = new HouseModel
                                           { hou_id = hou.hou_id,
-                                            hou_name = hou.hou_name
+                                              hou_name = hou.hou_name
                                           }
                                       }).ToListAsync();
 
                 var filteredMages = allMages.Where(mag =>
-                    (filter.mageName == null || mag.mag_name.Contains(filter.mageName, StringComparison.OrdinalIgnoreCase)) &&
-                    (filter.AALN == null || mag.mag_aaln.Equals(filter.AALN)) &&
-                    (!filter.minAge.HasValue || mag.mag_age >= filter.minAge) &&
-                    (!filter.maxAge.HasValue || mag.mag_age <= filter.maxAge) &&
-                    (filter.houseId == null || mag.mag_house.hou_id == filter.houseId) &&
-                    (!filter.minRegDate.HasValue || mag.mag_inscription >= filter.minRegDate) &&
-                    (!filter.maxRegDate.HasValue || mag.mag_inscription <= filter.maxRegDate)
-                ).ToList();
-
+                        (mageName == null || mag.mag_name.Contains(mageName, StringComparison.OrdinalIgnoreCase)) &&
+                        (AALN == null || mag.mag_aaln.Equals(AALN)) &&
+                        (!minAge.HasValue || mag.mag_age >= minAge) &&
+                        (!maxAge.HasValue || mag.mag_age <= maxAge) &&
+                        (houseId == null || mag.mag_house.hou_id == houseId) &&
+                        (!minRegDate.HasValue || mag.mag_inscription >= minRegDate) &&
+                        (!maxRegDate.HasValue || mag.mag_inscription <= maxRegDate)
+                    ).Select(mag => _mapper.Map<MageListModel>(mag)).ToList();
 
                 return filteredMages;
 
@@ -135,6 +122,68 @@ namespace gringotts_application.Services.Imp
             {
                 throw new ApiException($"Error while getting mage list: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Retrieves a mage by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the mage.</param>
+        /// <returns>Returns the mage if found, otherwise returns a BadRequest.</returns>
+        public async Task<MageDTO> GetMage(int id)
+        {
+            MageDTO? mage = await _context.mages.FindAsync(id);
+            if(mage != null)
+            {
+                return mage;
+            }
+            else
+            {
+                var msg = "There is no mage with this id";
+                throw new ApiException(msg);
+            }
+            
+        }
+
+        /// <summary>
+        /// Updates an existing mage by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the mage to be updated.</param>
+        /// <param name="mageModel">The mage model containing updated information.</param>
+        /// <returns>Returns the updated mage if successful, otherwise returns a BadRequest.</returns>
+        public async Task<MageDTO> UpdateMage(int id, MageModel mageModel)
+        {
+            MageDTO? mage = await _context.mages.FirstOrDefaultAsync(m => m.mag_id == id);
+             
+            if(mage != null)
+            {
+                try
+                {
+                    mage = _mapper.Map(mageModel, mage);
+
+                    if (_helper.IsYounger(mage.mag_birthdate))
+                    {
+                        var msg = "The mage must be at least 16 years old";
+                        throw new ApiException(msg);
+                    }
+
+                    await _helper.AALNValidator(mage);
+
+                    await _context.SaveChangesAsync();
+                    return mage;
+                }
+                catch (ApiException ex)
+                {
+                    var msg = ex.Message;
+                    throw new ApiException(msg);
+                }
+            }
+            else
+            {
+                var msg = "There is no mage with this id";
+                throw new ApiException(msg);
+            }
+           
+
         }
     }
 }

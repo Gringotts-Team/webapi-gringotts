@@ -31,7 +31,7 @@ namespace gringotts_api.Controllers
         /// <param name="loginDTO">User login data.</param>
         /// <returns>JWT token upon successful login.</returns>
         [HttpPost]
-        [Route("/login")]
+        [Route("login")]
         public async Task<ActionResult<string>> PostLoginUser(UserLoginModel userLoginModel)
         {
             try
@@ -58,7 +58,7 @@ namespace gringotts_api.Controllers
         /// <param name="token">JWT token to be validated.</param>
         /// <returns>True if the token is valid, false otherwise.</returns>
         [HttpGet]
-        [Route("/tokenValidated")]
+        [Route("tokenvalidation")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Overseer, Minion")]
         public async Task<ActionResult<bool>> GetTokenValidated(string token)
         {

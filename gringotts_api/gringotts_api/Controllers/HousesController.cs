@@ -11,16 +11,16 @@ namespace gringotts_api.Controllers
     /// API controller for managing houses.
     /// </summary>
     [ApiController]
-    [Route("house")]
-    public class HouseController : Controller
+    [Route("houses")]
+    public class HousesController : Controller
     {
         private readonly IHouseService _houseService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HouseController"/> class.
+        /// Initializes a new instance of the <see cref="HousesController"/> class.
         /// </summary>
         /// <param name="houseService">The service for managing houses.</param>
-        public HouseController(IHouseService houseService)
+        public HousesController(IHouseService houseService)
         {
             _houseService = houseService;
         }
