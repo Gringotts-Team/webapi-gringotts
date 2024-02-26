@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gringotts_api", "gringotts_api\gringotts_api.csproj", "{9DD2DEB1-7241-4BEB-B4EE-8059AE1D4BA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{207B5449-9F24-4F25-A860-59A1DEBBB690}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4304A03F-1DF3-4259-BF09-FD7FA1C90264}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{231F532E-A5AA-4A09-92AA-A516B5758839}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gringotts_application", "gringotts_application\gringotts_application.csproj", "{19BB5320-504D-4D5E-904D-137CABB56980}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9DD2DEB1-7241-4BEB-B4EE-8059AE1D4BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD2DEB1-7241-4BEB-B4EE-8059AE1D4BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD2DEB1-7241-4BEB-B4EE-8059AE1D4BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD2DEB1-7241-4BEB-B4EE-8059AE1D4BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19BB5320-504D-4D5E-904D-137CABB56980}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19BB5320-504D-4D5E-904D-137CABB56980}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19BB5320-504D-4D5E-904D-137CABB56980}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19BB5320-504D-4D5E-904D-137CABB56980}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9DD2DEB1-7241-4BEB-B4EE-8059AE1D4BA2} = {207B5449-9F24-4F25-A860-59A1DEBBB690}
+		{231F532E-A5AA-4A09-92AA-A516B5758839} = {4304A03F-1DF3-4259-BF09-FD7FA1C90264}
+		{19BB5320-504D-4D5E-904D-137CABB56980} = {231F532E-A5AA-4A09-92AA-A516B5758839}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6FF3A2D2-67B1-4DDE-93F9-4DBEC415DB6E}
+	EndGlobalSection
+EndGlobal
