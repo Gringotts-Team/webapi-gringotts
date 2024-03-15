@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace gringotts_application.Models
+﻿namespace gringotts_application.Models
 {
     /// <summary>
     /// Model representating a mage in the Gringotts application.

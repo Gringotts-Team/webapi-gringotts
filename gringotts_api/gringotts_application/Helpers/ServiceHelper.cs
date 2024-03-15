@@ -1,12 +1,8 @@
 ﻿using gringotts_application.DTOs;
 using gringotts_application.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
 
 namespace gringotts_application.Helpers
 {
@@ -54,7 +50,7 @@ namespace gringotts_application.Helpers
         public bool IsYounger(DateTime birthDate)
         {
             var age = CurrentAge(birthDate);
-            
+
             return age < 16;
         }
 

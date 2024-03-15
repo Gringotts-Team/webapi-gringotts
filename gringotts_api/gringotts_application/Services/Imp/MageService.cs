@@ -100,7 +100,8 @@ namespace gringotts_application.Services.Imp
                                           mag_age = _helper.CurrentAge(mag.mag_birthdate),
                                           mag_inscription = mag.mag_inscription,
                                           mag_house = new HouseModel
-                                          { hou_id = hou.hou_id,
+                                          {
+                                              hou_id = hou.hou_id,
                                               hou_name = hou.hou_name
                                           }
                                       }).ToListAsync();
@@ -132,7 +133,7 @@ namespace gringotts_application.Services.Imp
         public async Task<MageDTO> GetMage(int id)
         {
             MageDTO? mage = await _context.mages.FindAsync(id);
-            if(mage != null)
+            if (mage != null)
             {
                 return mage;
             }
@@ -141,7 +142,7 @@ namespace gringotts_application.Services.Imp
                 var msg = "There is no mage with this id";
                 throw new ApiException(msg);
             }
-            
+
         }
 
         /// <summary>
@@ -152,12 +153,13 @@ namespace gringotts_application.Services.Imp
         /// <returns>Returns the updated mage if successful, otherwise returns a BadRequest.</returns>
         public async Task<MageDTO> UpdateMage(int id, MageModel mageModel)
         {
-            MageDTO? mage = await _context.mages.FirstOrDefaultAsync(m => m.mag_id == id);
-             
-            if(mage != null)
+            try
             {
-                try
+                MageDTO? mage = await _context.mages.FindAsync(id);
+
+                if (mage != null)
                 {
+
                     mage = _mapper.Map(mageModel, mage);
 
                     if (_helper.IsYounger(mage.mag_birthdate))
@@ -170,20 +172,22 @@ namespace gringotts_application.Services.Imp
 
                     await _context.SaveChangesAsync();
                     return mage;
+
                 }
-                catch (ApiException ex)
+                else
                 {
-                    var msg = ex.Message;
+                    var msg = "There is no mage with this id";
                     throw new ApiException(msg);
                 }
             }
-            else
+            catch (ApiException ex)
             {
-                var msg = "There is no mage with this id";
+                var msg = ex.Message;
                 throw new ApiException(msg);
             }
-           
+
 
         }
+
     }
 }
